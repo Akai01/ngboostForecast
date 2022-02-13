@@ -1,0 +1,239 @@
+#' @title NGBoost forecasting model selection class
+#' @description
+#' It is a wrapper for the sklearn GridSearchCV with TimeSeriesSplit.
+#'
+#' @examples
+#' \dontrun{
+#'
+#' library(ngboostForecast)
+#'
+#' dists <- list(Dist("Normal"))
+#'
+#' base_learners <- list(sklearner(module = "tree", class = "DecisionTreeRegressor",
+#'                                 max_depth = 1),
+#'                       sklearner(module = "tree", class = "DecisionTreeRegressor",
+#'                                 max_depth = 2),
+#'                       sklearner(module = "tree", class = "DecisionTreeRegressor",
+#'                                 max_depth = 3),
+#'                       sklearner(module = "tree", class = "DecisionTreeRegressor",
+#'                                 max_depth = 4),
+#'                       sklearner(module = "tree", class = "DecisionTreeRegressor",
+#'                                 max_depth = 5),
+#'                       sklearner(module = "tree", class = "DecisionTreeRegressor",
+#'                                 max_depth = 6),
+#'                       sklearner(module = "tree", class = "DecisionTreeRegressor",
+#'                                 max_depth = 7))
+#'
+#' scores <-  list(Scores("LogScore"))
+#'
+#' model <- NGBforecastCV$new(Dist = dists,
+#'                            Base = base_learners,
+#'                            Score = scores,
+#'                            natural_gradient = TRUE,
+#'                            n_estimators = list(10, 100),
+#'                            learning_rate = list(0.1, 0.2),
+#'                            minibatch_frac = list(0.1, 1),
+#'                            col_sample = list(0.3),
+#'                            verbose = FALSE,
+#'                            verbose_eval = 100,
+#'                            tol = 1e-5)
+#'
+#' params <- model$get_params(y = AirPassengers,
+#' seasonal = TRUE,
+#' max_lag = 12,
+#' xreg = NULL,
+#' early_stopping_rounds = NULL,
+#' n_splits = 4L)
+#'
+#' params
+#'
+#'}
+#' @references
+#' https://stanfordmlgroup.github.io/ngboost/2-tuning.html
+#'
+#' @author Resul Akay
+#' @importFrom R6 R6Class
+#' @export
+NGBforecastCV <- R6::R6Class(
+  classname = "NGBforecastCV",
+  public = list(
+    #' @description Initialize NGBoost regression model.
+    #' @param Dist Assumed distributional form of Y|X=x.
+    #' A Distribution from ngboost.distns, e.g. Normal
+    #' @param Score Rule to compare probabilistic predictions P̂ to the observed
+    #' data y.A score from ngboost.scores, e.g. LogScore
+    #' @param Base Base learner to use in the boosting algorithm.
+    #' Any instantiated sklearn regressor, e.g. DecisionTreeRegressor()
+    #' @param natural_gradient Logical flag indicating whether the natural gradient should be used
+    #' @param n_estimators The number of boosting iterations to fit
+    #' @param learning_rate The learning rate
+    #' @param minibatch_frac The percent subsample of rows to use in each boosting iteration
+    #' @param col_sample The percent subsample of columns to use in each boosting iteration
+    #' @param verbose Flag indicating whether output should be printed during fitting
+    #' @param verbose_eval Increment (in boosting iterations) at which output should be printed
+    #' @param tol Numerical tolerance to be used in optimization
+    #' @param random_state Seed for reproducibility.
+    #' @return An NGBRegressor object that can be fit.
+    initialize = function(Dist = NULL,
+                          Score = NULL,
+                          Base = NULL,
+                          natural_gradient = TRUE,
+                          n_estimators = as.integer(500),
+                          learning_rate = 0.01,
+                          minibatch_frac = 1.0,
+                          col_sample = 1.0,
+                          verbose = TRUE,
+                          verbose_eval = as.integer(100),
+                          tol = 0.0001,
+                          random_state = NULL){
+
+      if(class(Dist)!="list"){
+        stop(
+          "Please profide a list of Dist object with at least one spesification"
+          )
+      }
+      if(class(Score)!="list"){
+        stop(
+          "Please profide a list of Score object with at least one spesification"
+        )
+      }
+      if(class(Base)!="list"){
+        stop(
+          "Please profide a list of Base base learnesr with at least one spesification"
+        )
+      }
+      if(class(n_estimators)!="list"){
+        stop(
+          "Please profide a list of n_estimators object with at least one spesification"
+        )
+      }
+      if(class(learning_rate)!="list"){
+        stop(
+          "Please profide a list of learning_rate object with at least one spesification"
+        )
+      }
+      if(class(minibatch_frac)!="list"){
+        stop(
+          "Please profide a list of minibatch_frac object with at least one spesification"
+        )
+      }
+      if(class(col_sample)!="list"){
+        stop(
+          "Please profide a list of col_sample object with at least one spesification"
+        )
+      }
+
+      private$Dist <- Dist
+      private$Base <- Base
+      private$Score <- Score
+      private$natural_gradient <- natural_gradient
+      private$n_estimators <- as.integer(n_estimators)
+      private$learning_rate <- learning_rate
+      private$minibatch_frac <- minibatch_frac
+      private$col_sample <- col_sample
+      private$verbose <- verbose
+      private$verbose_eval <- as.integer(verbose_eval)
+      private$tol <- tol
+      private$random_state <- random_state
+
+      private$model <- ngboost$NGBRegressor(
+        natural_gradient = private$natural_gradient,
+        verbose = private$verbose,
+        verbose_eval = private$verbose_eval,
+        tol = private$tol,
+        random_state = private$random_state
+      )
+      return(self)
+    },
+    #' @description Get model parameters of a NGBForecast to a time series.
+    #' @param y A ts object
+    #' @param max_lag Maximum number of lags
+    #' @param xreg Optional. A numerical vector or matrix of external regressors,
+    #' which must have the same number of rows as y.
+    #' (It should not be a data frame.)
+    #' @param n_splits Number of splits. Must be at least 2.
+    #' @param seasonal Boolean. If \code{seasonal = TRUE} the fourier terms will be
+    #'  used for modeling seasonality.
+    #' @param K Maximum order(s) of Fourier terms, used only if
+    #' \code{seasonal = TRUE}.
+    #' @param train_loss_monitor A custom score or set of scores to track on the
+    #' training set during training. Defaults to the score defined in the NGBoost
+    #' constructor. Please do not modify unless you know what you are doing.
+    #' @param val_loss_monitor A custom score or set of scores to track on the
+    #'  validation set during training. Defaults to the score defined in the
+    #'  NGBoost  constructor. Please do not modify unless you know what you are
+    #'  doing.
+    #' @param early_stopping_rounds The number of consecutive boosting
+    #'  iterations during which the loss has to increase before the algorithm
+    #'  stops early.
+    #' @return A list of best parameters
+    #'
+    #' @importFrom forecast is.constant na.interp fourier
+    #'
+    get_params = function(y,
+                          max_lag = 5,
+                          xreg = NULL,
+                          seasonal = TRUE,
+                          K =  frequency(y) / 2 - 1,
+                          n_splits = 4,
+                          train_loss_monitor=NULL,
+                          val_loss_monitor=NULL,
+                          early_stopping_rounds=NULL){
+
+      prepared_d <- prepare_data(y = y,
+                                 max_lag = max_lag,
+                                 xreg = xreg,
+                                 seasonal = seasonal,
+                                 K = K)
+
+      X = prepared_d$x
+      Y = prepared_d$y
+
+      private$feature_names <- colnames(X)
+      model = private$model
+
+      param_grid = list("n_estimators" = private$n_estimators,
+                        "learning_rate" = private$learning_rate,
+                        "minibatch_frac" = private$minibatch_frac,
+                        "col_sample" = private$col_sample,
+                        "Base" = private$Base,
+                        "Dist" = private$Dist,
+                        "Score" = private$Score)
+
+      tscv = sklearn[["model_selection"]]$TimeSeriesSplit(
+        n_splits = as.integer(n_splits)
+        )
+
+      grdsrch<- sklearn[["model_selection"]]$GridSearchCV(
+        model, param_grid=param_grid, cv = tscv
+        )
+      result <- tryCatch(
+        grdsrch$fit(X,
+                    Y,
+                    train_loss_monitor = train_loss_monitor,
+                    val_loss_monitor = val_loss_monitor,
+                    early_stopping_rounds = early_stopping_rounds),
+        error = function(e) NULL)
+      out <- result$best_params_
+
+      out$seasonal <- seasonal
+      out$max_lag <- max_lag
+      out$K <- K
+      return(out)
+    }
+  ),
+  private = list(Dist = NULL,
+                 Score = NULL,
+                 Base = NULL,
+                 natural_gradient = NULL,
+                 n_estimators = NULL,
+                 learning_rate = NULL,
+                 minibatch_frac = NULL,
+                 col_sample = NULL,
+                 verbose = NULL,
+                 verbose_eval = NULL,
+                 tol = NULL,
+                 random_state = NULL,
+                 model = NULL,
+                 feature_names = NULL)
+)

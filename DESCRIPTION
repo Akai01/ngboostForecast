@@ -1,0 +1,32 @@
+Package: ngboostForecast
+Title: Probabilistic Forecasting Time Series forecastin with "NGBoost"
+Version: 0.0.1
+Authors@R: 
+    person(given = "Resul",
+           family = "Akay",
+           role = c("aut", "cre"),
+           email = "resulakay1@gmail.com")
+Description: Probabilistic forecasting using Python's "NGBoost" library.
+License: Apache License (>= 2)
+Encoding: UTF-8
+LazyData: true
+SystemRequirements: Python (>= 3.6)
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Imports: 
+    dplyr (>= 1.0.7),
+    forecast (>= 8.15),
+    magrittr (>= 2.0.1),
+    R6 (>= 2.5.1)
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Config/reticulate:
+  list(
+  packages = list(
+  list(package = 'importlib-metadata', pip = TRUE), 
+  list(package = 'ngboost', pip = TRUE))
+  )
+Depends: 
+    R (>= 3.6),
+    reticulate (>= 1.20)
