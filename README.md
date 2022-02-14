@@ -118,33 +118,36 @@ params <- model$get_params(y = AirPassengers,
 
 ``` r
 params
-#> $Base
+#> $ngboost_best_params
+#> $ngboost_best_params$Base
 #> DecisionTreeRegressor(max_depth=3.0)
 #> 
-#> $Dist
+#> $ngboost_best_params$Dist
 #> <class 'ngboost.distns.normal.Normal'>
 #> 
-#> $Score
+#> $ngboost_best_params$Score
 #> <class 'ngboost.scores.LogScore'>
 #> 
-#> $col_sample
+#> $ngboost_best_params$col_sample
 #> [1] 0.3
 #> 
-#> $learning_rate
+#> $ngboost_best_params$learning_rate
 #> [1] 0.2
 #> 
-#> $minibatch_frac
+#> $ngboost_best_params$minibatch_frac
 #> [1] 1
 #> 
-#> $n_estimators
+#> $ngboost_best_params$n_estimators
 #> [1] 100
 #> 
-#> $seasonal
+#> 
+#> $ngb_forecast_params
+#> $ngb_forecast_params$seasonal
 #> [1] TRUE
 #> 
-#> $max_lag
+#> $ngb_forecast_params$max_lag
 #> [1] 12
 #> 
-#> $K
+#> $ngb_forecast_params$K
 #> [1] 5
 ```
