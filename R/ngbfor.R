@@ -71,7 +71,17 @@ NGBforecast <- R6::R6Class(
       private$tol <- tol
       private$random_state <- random_state
 
-      #ngboost <- reticulate::import("ngboost")
+      if(!ngboostForecast::is_exists_conda()) {
+        stop(
+          paste(
+            "\nConda is not available!",
+            "\nPlease use",
+            "'reticulate::install_miniconda(update = TRUE, force = TRUE)'",
+            "and then restart R.'"
+          )
+        )
+      }
+
       private$model <- ngboost$NGBRegressor(
         Dist = private$Dist,
         Score = private$Score,

@@ -136,6 +136,17 @@ NGBforecastCV <- R6::R6Class(
       private$tol <- tol
       private$random_state <- random_state
 
+      if(!ngboostForecast::is_exists_conda()) {
+        stop(
+          paste(
+            "\nConda is not available!",
+            "\nPlease use",
+            "'reticulate::install_miniconda(update = TRUE, force = TRUE)'",
+            "and then restart R.'"
+          )
+        )
+      }
+
       private$model <- ngboost$NGBRegressor(
         natural_gradient = private$natural_gradient,
         verbose = private$verbose,
@@ -207,18 +218,21 @@ NGBforecastCV <- R6::R6Class(
       grdsrch<- sklearn[["model_selection"]]$GridSearchCV(
         model, param_grid=param_grid, cv = tscv
         )
-      result <- tryCatch(
-        grdsrch$fit(X,
-                    Y,
-                    train_loss_monitor = train_loss_monitor,
-                    val_loss_monitor = val_loss_monitor,
-                    early_stopping_rounds = early_stopping_rounds),
-        error = function(e) NULL)
-      out <- result$best_params_
+      result <- grdsrch$fit(X,
+                            Y,
+                            train_loss_monitor = train_loss_monitor,
+                            val_loss_monitor = val_loss_monitor,
+                            early_stopping_rounds = early_stopping_rounds)
 
-      out$seasonal <- seasonal
-      out$max_lag <- max_lag
-      out$K <- K
+      out <- list(
+        "ngboost_best_params" = result$best_params_,
+        "ngb_forecast_params" = list(
+          "seasonal" = seasonal,
+          "max_lag" = max_lag,
+          "K" = K
+        )
+      )
+
       return(out)
     }
   ),
