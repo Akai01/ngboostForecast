@@ -49,7 +49,7 @@
 #'
 #'}
 #' @references
-#' https://stanfordmlgroup.github.io/ngboost/2-tuning.html
+#' \url{https://stanfordmlgroup.github.io/ngboost/2-tuning.html}
 #'
 #' @author Resul Akay
 #' @importFrom R6 R6Class
@@ -57,23 +57,30 @@
 NGBforecastCV <- R6::R6Class(
   classname = "NGBforecastCV",
   public = list(
-    #' @description Initialize NGBoost regression model.
-    #' @param Dist Assumed distributional form of Y|X=x.
-    #' A Distribution from ngboost.distns, e.g. Normal
-    #' @param Score Rule to compare probabilistic predictions P̂ to the observed
-    #' data y.A score from ngboost.scores, e.g. LogScore
-    #' @param Base Base learner to use in the boosting algorithm.
-    #' Any instantiated sklearn regressor, e.g. DecisionTreeRegressor()
-    #' @param natural_gradient Logical flag indicating whether the natural gradient should be used
+    #' @description Initialize an NGBforecastCV model.
+    #' @param Dist Assumed distributional form of \code{Y|X=x}. An output of 
+    #' \code{\link{Dist}} function, e.g. \code{Dist('Normal')}
+    #' 
+    #' @param Score Rule to compare probabilistic predictions to 
+    #' the observed data. A score from \code{\link{Scores}} function, e.g. 
+    #' \code{Scores(score = "LogScore")}.
+    #' @param Base Base learner. An output of \code{\link{sklearner}} function,
+    #' e.g. \code{sklearner(module = "tree", class = "DecisionTreeRegressor", ...)}
+    #' @param natural_gradient Logical flag indicating whether the natural 
+    #' gradient should be used
     #' @param n_estimators The number of boosting iterations to fit
     #' @param learning_rate The learning rate
-    #' @param minibatch_frac The percent subsample of rows to use in each boosting iteration
-    #' @param col_sample The percent subsample of columns to use in each boosting iteration
-    #' @param verbose Flag indicating whether output should be printed during fitting
-    #' @param verbose_eval Increment (in boosting iterations) at which output should be printed
+    #' @param minibatch_frac The percent subsample of rows to use in each 
+    #' boosting iteration
+    #' @param col_sample The percent subsample of columns to use in each 
+    #' boosting iteration
+    #' @param verbose Flag indicating whether output should be printed 
+    #' during fitting. If TRUE it will print logs.
+    #' @param verbose_eval Increment (in boosting iterations) at which 
+    #' output should be printed
     #' @param tol Numerical tolerance to be used in optimization
     #' @param random_state Seed for reproducibility.
-    #' @return An NGBRegressor object that can be fit.
+    #' @return An NGBforecastCV object that can be fit.
     initialize = function(Dist = NULL,
                           Score = NULL,
                           Base = NULL,
@@ -156,17 +163,19 @@ NGBforecastCV <- R6::R6Class(
       )
       return(self)
     },
-    #' @description Get model parameters of a NGBForecast to a time series.
-    #' @param y A ts object
+    #' @description Tune ngboosForecast.
+    #' 
+    #' @param y A time series (ts) object
     #' @param max_lag Maximum number of lags
-    #' @param xreg Optional. A numerical vector or matrix of external regressors,
-    #' which must have the same number of rows as y.
-    #' (It should not be a data frame.)
-    #' @param n_splits Number of splits. Must be at least 2.
-    #' @param seasonal Boolean. If \code{seasonal = TRUE} the fourier terms will be
-    #'  used for modeling seasonality.
+    #' @param xreg Optional. A numerical matrix of external regressors,
+    #' which must have the same number of rows as y. 
+    #' @param test_size The length of validation set. 
+    #' If it is NULL, then, it is automatically specified.
+    #' @param seasonal Boolean. If \code{seasonal = TRUE} the fourier terms 
+    #' will be used for modeling seasonality.
     #' @param K Maximum order(s) of Fourier terms, used only if
     #' \code{seasonal = TRUE}.
+    #' @param n_splits Number of splits. Must be at least 2.
     #' @param train_loss_monitor A custom score or set of scores to track on the
     #' training set during training. Defaults to the score defined in the NGBoost
     #' constructor. Please do not modify unless you know what you are doing.
@@ -177,19 +186,20 @@ NGBforecastCV <- R6::R6Class(
     #' @param early_stopping_rounds The number of consecutive boosting
     #'  iterations during which the loss has to increase before the algorithm
     #'  stops early.
-    #' @return A list of best parameters
+    #'  
+    #'  
+    #' @return A named list of best parameters.
     #'
     #' @importFrom forecast is.constant na.interp fourier
-    #'
-    get_params = function(y,
-                          max_lag = 5,
-                          xreg = NULL,
-                          seasonal = TRUE,
-                          K =  frequency(y) / 2 - 1,
-                          n_splits = 4,
-                          train_loss_monitor=NULL,
-                          val_loss_monitor=NULL,
-                          early_stopping_rounds=NULL){
+    tune = function(y,
+                    max_lag = 5,
+                    xreg = NULL,
+                    seasonal = TRUE,
+                    K =  frequency(y) / 2 - 1,
+                    n_splits = NULL,
+                    train_loss_monitor=NULL,
+                    val_loss_monitor=NULL,
+                    early_stopping_rounds=NULL){
 
       prepared_d <- prepare_data(y = y,
                                  max_lag = max_lag,

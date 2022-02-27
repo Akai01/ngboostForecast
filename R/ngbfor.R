@@ -1,9 +1,12 @@
 #' @title NGBoost forecasting class
 #' @description
-#' It is a wrapper for the NGBoost regression.
+#' The main forecasting class.
 #'
 #' @examples
 #' \dontrun{
+#' 
+#' library(ngboostForecast)
+#' 
 #' model <- NGBforecast$new(Dist = Dist("Normal"),
 #'                          Base = sklearner(module = "linear_model",
 #'                          class = "Ridge"),
@@ -19,33 +22,46 @@
 #' model$fit(y = AirPassengers, seasonal = TRUE, max_lag = 12, xreg = NULL,
 #' early_stopping_rounds = 10L)
 #' fc <- model$forecast(h = 12, level = c(90, 80), xreg = NULL)
-#' forecast::autoplot(fc)
+#' 
+#' autoplot(fc)
 #'}
 #'
-#'
+#' @references 
+#' 
+#' Duan, T et. al. (2019), NGBoost: Natural Gradient Boosting for Probabilistic 
+#' Prediction. 
+#' @returns An NGBforecast class
 #' @author Resul Akay
+#' 
 #' @importFrom R6 R6Class
 #' @export
 NGBforecast <- R6::R6Class(
   classname = "NGBforecast",
   public = list(
-    #' @description Initialize NGBoost regression model.
-    #' @param Dist Assumed distributional form of Y|X=x.
-    #' A Distribution from ngboost.distns, e.g. Normal
-    #' @param Score Rule to compare probabilistic predictions P̂ to the observed
-    #' data y.A score from ngboost.scores, e.g. LogScore
-    #' @param Base Base learner to use in the boosting algorithm.
-    #' Any instantiated sklearn regressor, e.g. DecisionTreeRegressor()
-    #' @param natural_gradient Logical flag indicating whether the natural gradient should be used
+    #' @description Initialize an NGBforecast model.
+    #' @param Dist Assumed distributional form of \code{Y|X=x}. An output of 
+    #' \code{\link{Dist}} function, e.g. \code{Dist('Normal')}
+    #' 
+    #' @param Score Rule to compare probabilistic predictions to 
+    #' the observed data. A score from \code{\link{Scores}} function, e.g. 
+    #' \code{Scores(score = "LogScore")}.
+    #' @param Base Base learner. An output of \code{\link{sklearner}} function,
+    #' e.g. \code{sklearner(module = "tree", class = "DecisionTreeRegressor", ...)}
+    #' @param natural_gradient Logical flag indicating whether the natural 
+    #' gradient should be used
     #' @param n_estimators The number of boosting iterations to fit
     #' @param learning_rate The learning rate
-    #' @param minibatch_frac The percent subsample of rows to use in each boosting iteration
-    #' @param col_sample The percent subsample of columns to use in each boosting iteration
-    #' @param verbose Flag indicating whether output should be printed during fitting
-    #' @param verbose_eval Increment (in boosting iterations) at which output should be printed
+    #' @param minibatch_frac The percent subsample of rows to use in each 
+    #' boosting iteration
+    #' @param col_sample The percent subsample of columns to use in each 
+    #' boosting iteration
+    #' @param verbose Flag indicating whether output should be printed 
+    #' during fitting. If TRUE it will print logs.
+    #' @param verbose_eval Increment (in boosting iterations) at which 
+    #' output should be printed
     #' @param tol Numerical tolerance to be used in optimization
     #' @param random_state Seed for reproducibility.
-    #' @return An NGBRegressor object that can be fit.
+    #' @return An NGBforecast object that can be fit.
     initialize = function(Dist = NULL,
                           Score = NULL,
                           Base = NULL,
@@ -98,15 +114,15 @@ NGBforecast <- R6::R6Class(
       )
       return(self)
     },
-    #' @description fit a ngbregression to a time series.
-    #' @param y A ts object
+    #' @description Fit the initialized model.
+    #' @param y A time series (ts) object
     #' @param max_lag Maximum number of lags
-    #' @param xreg Optional. A numerical vector or matrix of external regressors,
-    #' which must have the same number of rows as y.
-    #' (It should not be a data frame.)
-    #' @param test_size The length of validation set.
-    #' @param seasonal Boolean. If \code{seasonal = TRUE} the fourier terms will be
-    #'  used for modeling seasonality.
+    #' @param xreg Optional. A numerical matrix of external regressors,
+    #' which must have the same number of rows as y. 
+    #' @param test_size The length of validation set. 
+    #' If it is NULL, then, it is automatically specified.
+    #' @param seasonal Boolean. If \code{seasonal = TRUE} the fourier terms 
+    #' will be used for modeling seasonality.
     #' @param K Maximum order(s) of Fourier terms, used only if
     #' \code{seasonal = TRUE}.
     #' @param train_loss_monitor A custom score or set of scores to track on the
@@ -126,7 +142,7 @@ NGBforecast <- R6::R6Class(
     fit = function(y,
                    max_lag = 5,
                    xreg = NULL,
-                   test_size = 4,
+                   test_size = NULL,
                    seasonal = TRUE,
                    K =  frequency(y) / 2 - 1,
                    train_loss_monitor=NULL,
@@ -170,11 +186,15 @@ NGBforecast <- R6::R6Class(
       method = paste0("NGBforecast", " with ",
                       gsub("[()]", "", paste0(private$Base)),
                       "(",max_lag,", ", K, ")")
+      
+      fitted_int <- ts(c(rep(NA, max_lag), c(model$predict(X))), 
+                       start = start(y), frequency = frequency(y))
+      
       private$y =  y
       private$y_modified = modified_y
       private$x = x
       private$model = model
-      private$fitted = fitted
+      private$fitted = fitted_int
       private$max_lag = max_lag
       private$seasonal = seasonal
       private$method = method
@@ -195,9 +215,10 @@ NGBforecast <- R6::R6Class(
     #' @param xreg A numerical vector or matrix of external regressors
     #' @param level Confidence level for prediction intervals
     #' @param data_frame Bool. If TRUE, forecast will be returned as a
-    #' data.frame object, if FALSE it will return a forecast class
+    #' data.frame object, if FALSE it will return a forecast class. If TRUE, 
+    #' \code{\link{autoplot}} will function.
     #' @importFrom dplyr select starts_with
-    forecast = function(h = frequency(object$y),
+    forecast = function(h = 6,
                         xreg = NULL,
                         level = c(80, 95),
                         data_frame = FALSE){
@@ -272,7 +293,7 @@ NGBforecast <- R6::R6Class(
       return(output)
     },
 
-    #' @description Return the feature importances for all parameters in the
+    #' @description Return the feature importance for all parameters in the
     #' distribution (the higher, the more important the feature).
     #' @return A data frame
     #'
@@ -288,6 +309,8 @@ NGBforecast <- R6::R6Class(
       return(out)
     },
     #' @description Plot feature importance
+    #' @return A ggplot object
+    #' 
     plot_feature_importance = function() {
       feature_importance_data <- private$feature_importance_data
 
@@ -304,26 +327,12 @@ NGBforecast <- R6::R6Class(
                       ggplot2::aes(y = .data$features, x = .data$importance)) +
         ggplot2::geom_col()
     },
-
-    #' @description Set the parameters of this estimator.
-    #' The method works on simple estimators as well as on nested objects
-    #' (such as :class:`~sklearn.pipeline.Pipeline`). The latter have
-    #' parameters of the form ``<component>__<parameter>`` so that it's
-    #' possible to update each component of a nested object.
-    #' @param ... dict (a named R list). Estimator parameters.
-    #' @return self : estimator instance. Estimator instance.
-    #'
-    set_params = function(...){
-      model = private$model
-      model$set_params(...)
-      return(self)
-    },
-
+    
     #' @description Get parameters for this estimator.
     #' @param deep bool, default = TRUE
     #' If True, will return the parameters for this estimator and
     #' contained subobjects that are estimators.
-    #' @return params. A dict (R list). Parameter names mapped to their values.
+    #' @return A named list of parameters.
     get_params = function(deep = TRUE){
       model = private$model
       model$get_params(deep = deep)
@@ -389,7 +398,8 @@ NGBforecast <- R6::R6Class(
                    freq <- stats::frequency(private$y_modified)
                    if (private$seasonal == TRUE & freq > 1)
                    {
-                     fourier_h <- forecast::fourier(private$y_modified, K = private$K, h = h)
+                     fourier_h <- forecast::fourier(private$y_modified,
+                                                    K = private$K, h = h)
                    }
 
                    prediction_iter <- matrix(ncol = length(level)*2, nrow = h)

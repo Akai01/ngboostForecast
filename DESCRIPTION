@@ -1,13 +1,15 @@
 Package: ngboostForecast
-Title: Probabilistic Forecasting Time Series forecastin with "NGBoost"
+Title: Probabilistic Time Series Forecasting
 Version: 0.0.2
 Authors@R: 
     person(given = "Resul",
            family = "Akay",
            role = c("aut", "cre"),
            email = "resulakay1@gmail.com")
-Description: Probabilistic forecasting using Python's "NGBoost" library.
+Description: Probabilistic time series forecasting via Natural Gradient Boosting for Probabilistic Prediction.
 License: Apache License (>= 2)
+URL: https://github.com/Akai01/ngboostForecast
+BugReports: https://github.com/Akai01/ngboostForecast/issues
 Encoding: UTF-8
 LazyData: true
 SystemRequirements: Python (>= 3.6)
@@ -19,6 +21,7 @@ Imports:
     magrittr (>= 2.0.1),
     R6 (>= 2.5.1)
 Suggests: 
+    ggplot2 (>= 3.3.5),
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Config/reticulate:

@@ -2,8 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{Scores}
 \alias{Scores}
-\title{Select a rule to compare probabilistic predictions P̂ to the observed data y.
-A score from ngboost.scores, e.g. LogScore.}
+\title{Select a rule to compare probabilistic predictions to the observed data.}
 \usage{
 Scores(score = c("LogScore", "CRPS", "CRPScore", "MLE"))
 }
@@ -21,7 +20,7 @@ Scores(score = c("LogScore", "CRPS", "CRPScore", "MLE"))
 A score class from ngboost.scores
 }
 \description{
-Select a rule to compare probabilistic predictions P̂ to the observed data y.
+Select a rule to compare probabilistic predictions to the observed data.
 A score from ngboost.scores, e.g. LogScore.
 }
 \author{

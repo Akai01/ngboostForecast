@@ -54,7 +54,7 @@ params
 }
 }
 \references{
-https://stanfordmlgroup.github.io/ngboost/2-tuning.html
+\url{https://stanfordmlgroup.github.io/ngboost/2-tuning.html}
 }
 \author{
 Resul Akay
@@ -63,7 +63,7 @@ Resul Akay
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{NGBforecastCV$new()}}
-\item \href{#method-get_params}{\code{NGBforecastCV$get_params()}}
+\item \href{#method-tune}{\code{NGBforecastCV$tune()}}
 \item \href{#method-clone}{\code{NGBforecastCV$clone()}}
 }
 }
@@ -71,7 +71,7 @@ Resul Akay
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Initialize NGBoost regression model.
+Initialize an NGBforecastCV model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{NGBforecastCV$new(
   Dist = NULL,
@@ -92,28 +92,34 @@ Initialize NGBoost regression model.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{Dist}}{Assumed distributional form of Y|X=x.
-A Distribution from ngboost.distns, e.g. Normal}
+\item{\code{Dist}}{Assumed distributional form of \code{Y|X=x}. An output of
+\code{\link{Dist}} function, e.g. \code{Dist('Normal')}}
 
-\item{\code{Score}}{Rule to compare probabilistic predictions P̂ to the observed
-data y.A score from ngboost.scores, e.g. LogScore}
+\item{\code{Score}}{Rule to compare probabilistic predictions to
+the observed data. A score from \code{\link{Scores}} function, e.g.
+\code{Scores(score = "LogScore")}.}
 
-\item{\code{Base}}{Base learner to use in the boosting algorithm.
-Any instantiated sklearn regressor, e.g. DecisionTreeRegressor()}
+\item{\code{Base}}{Base learner. An output of \code{\link{sklearner}} function,
+e.g. \code{sklearner(module = "tree", class = "DecisionTreeRegressor", ...)}}
 
-\item{\code{natural_gradient}}{Logical flag indicating whether the natural gradient should be used}
+\item{\code{natural_gradient}}{Logical flag indicating whether the natural
+gradient should be used}
 
 \item{\code{n_estimators}}{The number of boosting iterations to fit}
 
 \item{\code{learning_rate}}{The learning rate}
 
-\item{\code{minibatch_frac}}{The percent subsample of rows to use in each boosting iteration}
+\item{\code{minibatch_frac}}{The percent subsample of rows to use in each
+boosting iteration}
 
-\item{\code{col_sample}}{The percent subsample of columns to use in each boosting iteration}
+\item{\code{col_sample}}{The percent subsample of columns to use in each
+boosting iteration}
 
-\item{\code{verbose}}{Flag indicating whether output should be printed during fitting}
+\item{\code{verbose}}{Flag indicating whether output should be printed
+during fitting. If TRUE it will print logs.}
 
-\item{\code{verbose_eval}}{Increment (in boosting iterations) at which output should be printed}
+\item{\code{verbose_eval}}{Increment (in boosting iterations) at which
+output should be printed}
 
 \item{\code{tol}}{Numerical tolerance to be used in optimization}
 
@@ -122,22 +128,22 @@ Any instantiated sklearn regressor, e.g. DecisionTreeRegressor()}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An NGBRegressor object that can be fit.
+An NGBforecastCV object that can be fit.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_params"></a>}}
-\if{latex}{\out{\hypertarget{method-get_params}{}}}
-\subsection{Method \code{get_params()}}{
-Get model parameters of a NGBForecast to a time series.
+\if{html}{\out{<a id="method-tune"></a>}}
+\if{latex}{\out{\hypertarget{method-tune}{}}}
+\subsection{Method \code{tune()}}{
+Tune ngboosForecast.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{NGBforecastCV$get_params(
+\if{html}{\out{<div class="r">}}\preformatted{NGBforecastCV$tune(
   y,
   max_lag = 5,
   xreg = NULL,
   seasonal = TRUE,
   K = frequency(y)/2 - 1,
-  n_splits = 4,
+  n_splits = NULL,
   train_loss_monitor = NULL,
   val_loss_monitor = NULL,
   early_stopping_rounds = NULL
@@ -147,16 +153,15 @@ Get model parameters of a NGBForecast to a time series.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{y}}{A ts object}
+\item{\code{y}}{A time series (ts) object}
 
 \item{\code{max_lag}}{Maximum number of lags}
 
-\item{\code{xreg}}{Optional. A numerical vector or matrix of external regressors,
-which must have the same number of rows as y.
-(It should not be a data frame.)}
+\item{\code{xreg}}{Optional. A numerical matrix of external regressors,
+which must have the same number of rows as y.}
 
-\item{\code{seasonal}}{Boolean. If \code{seasonal = TRUE} the fourier terms will be
-used for modeling seasonality.}
+\item{\code{seasonal}}{Boolean. If \code{seasonal = TRUE} the fourier terms
+will be used for modeling seasonality.}
 
 \item{\code{K}}{Maximum order(s) of Fourier terms, used only if
 \code{seasonal = TRUE}.}
@@ -175,11 +180,14 @@ doing.}
 \item{\code{early_stopping_rounds}}{The number of consecutive boosting
 iterations during which the loss has to increase before the algorithm
 stops early.}
+
+\item{\code{test_size}}{The length of validation set.
+If it is NULL, then, it is automatically specified.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A list of best parameters
+A named list of best parameters.
 }
 }
 \if{html}{\out{<hr>}}

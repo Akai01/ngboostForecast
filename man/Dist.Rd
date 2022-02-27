@@ -11,7 +11,7 @@ Dist(
 )
 }
 \arguments{
-\item{dist}{NGBoost distributions
+\item{dist}{NGBoost distributions. One of the following:
 \itemize{
 \item Bernoulli
 \item k_categorical
@@ -26,6 +26,9 @@ Dist(
 }}
 
 \item{k}{Used only with k_categorical and MultivariateNormal}
+}
+\value{
+An NGBoost Distribution object
 }
 \description{
 NGBoost distributions

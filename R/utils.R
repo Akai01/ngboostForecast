@@ -18,7 +18,7 @@ sklearner <- function(module = "tree", class = "DecisionTreeRegressor",
 }
 
 #' NGBoost distributions
-#' @param dist NGBoost distributions
+#' @param dist NGBoost distributions. One of the following:
 #' \itemize{
 #' \item Bernoulli
 #' \item k_categorical
@@ -33,6 +33,7 @@ sklearner <- function(module = "tree", class = "DecisionTreeRegressor",
 #' }
 #' @import reticulate
 #' @param k Used only with k_categorical and MultivariateNormal
+#' @returns An NGBoost Distribution object
 #' @export
 Dist <- function(dist = c("Normal", "Bernoulli", "k_categorical", "StudentT",
                           "Laplace", "Cauchy", "Exponential", "LogNormal",
@@ -50,7 +51,9 @@ Dist <- function(dist = c("Normal", "Bernoulli", "k_categorical", "StudentT",
   out
 }
 
-#' Select a rule to compare probabilistic predictions P̂ to the observed data y.
+#' Select a rule to compare probabilistic predictions to the observed data.
+#' @description 
+#' Select a rule to compare probabilistic predictions to the observed data.
 #' A score from ngboost.scores, e.g. LogScore.
 #' @param score A string. can be one of the following:
 #' \itemize{
@@ -70,7 +73,9 @@ Scores <- function(score = c("LogScore", "CRPS", "CRPScore", "MLE")){
 }
 
 #' Is conda installed?
-#' @return Logical, true if and only if conda is installed.
+#' @description 
+#' Only for internal usage. 
+#' @return Logical, TRUE if conda is installed.
 #' @export
 #' @author Resul Akay
 is_exists_conda <- function() {
@@ -132,44 +137,69 @@ NULL
 #' @usage lhs \%<>\% rhs
 NULL
 
+#' forecast package autoplot function
+#'
+#' See \code{\link[forecast]{autoplot}} for details.
+#'
+#' @name autoplot
+#' @rdname autoplot
+#' @keywords internal
+#' @export
+#' @importFrom forecast autoplot
+#' @usage autoplot(object,...)
+#' @return A ggplot object
+#' @seealso \code{\link[forecast]{autoplot}}
+NULL
+
+#' forecast package autolayer function
+#'
+#' See \code{\link[forecast]{autolayer}} for details.
+#'
+#' @name autolayer
+#' @rdname autolayer
+#' @keywords internal
+#' @export
+#' @importFrom forecast autolayer
+#' @return A ggplot layer
+#' @usage autolayer(object,...)
+#' @seealso \code{\link[forecast]{autolayer}}
+NULL
+
+#' magrittr pipe operator
+#'
+#' See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
+#'
+#' @name %>%
+#' @rdname pipe
+#' @keywords internal
+#' @export
+#' @importFrom magrittr %>%
+#' @return Nothing
+#'
+#' @usage lhs \%>\% rhs
+NULL
+
+
 `%notin%` <- Negate(`%in%`)
 
+#' @importFrom stats na.omit
 lag_maker <- function(y, max_lag) {
   if ("ts" %notin% class(y)) {
     stop("y must be a 'ts' object")
   }
-
   max_lag1 <- round(max_lag)
   if (max_lag1 != max_lag) {
-    message(
-      paste(
-        "'max_lag' should not be a fractional number.",
-        "'max_lag' rounde to",
-        max_lag1,
-        sep = " "
-      )
-    )
+    message(paste("'max_lag' should not be a fractional number.", 
+                  "'max_lag' rounde to",  max_lag1, sep = " "))
   }
-  length_y <- length(y)
-  n_col <- max_lag1 + 1
-  dta <- apply(
-    array(seq(
-      from = 1, to = n_col, by = 1
-    )),
-    1,
-    FUN = function(i) {
-      y[(max_lag1 + 2 - i):(length_y + 1 - i)]
-    }
-  )
-
-  colnames(dta) <-
-    c("y", paste0("y_lag", seq(
-      from = 1, to = max_lag1, by = 1
-    )))
-
-  dta <- dta[,-1]
-
-  return(dta)
+  y <- c(y)
+  out <- matrix(nrow = length(y), ncol = max_lag)
+  for (i in seq_len(max_lag)) {
+    out[, i] <- dplyr::lag(y, i)
+  }
+  out <- as.matrix(na.omit(out))
+  colnames(out) <- paste0("y_lag", seq_len(max_lag))
+  return(out)
 }
 
 #' @importFrom stats frequency time ts
@@ -182,11 +212,10 @@ prepare_data <- function(y,
   if ("ts" %notin% class(y)) {
     stop("y must be a univariate time series")
   }
-
+  
   length_y <- length(y)
-
   freq <- stats::frequency(y)
-
+  
   if (length_y < freq) {
     stop("Not enough data to fit a model")
   }
@@ -195,10 +224,8 @@ prepare_data <- function(y,
     max_lag <- 1
   }
   if (c(length_y - freq - round(freq / 4)) < max_lag) {
-    warning(paste(
-      "Input data is too short. Reducing max_lags to ",
-      round(length_y - freq - round(freq / 4))
-    ))
+    warning(paste("Input data is too short. Reducing max_lags to ",
+                  round(length_y - freq - round(freq / 4))))
     max_lag <- round(length_y - freq - round(freq / 4))
   }
   if (max_lag != round(max_lag)) {
@@ -221,10 +248,9 @@ prepare_data <- function(y,
     ncolxreg <- ncol(xreg)
   }
 
-  modified_y <- ts(y[-seq_len(max_lag)],
-                   start = time(y)[max_lag + 1],
-                   frequency = freq)
-
+  modified_y <-
+    ts(y[-seq_len(max_lag)], start = time(y)[max_lag + 1], frequency = freq)
+  
   if (seasonal == TRUE | freq > 1)
   {
     ncolx <- max_lag + K * 2
@@ -237,8 +263,6 @@ prepare_data <- function(y,
   x <- matrix(0, nrow = c(length_y - max_lag), ncol = ncolx)
 
   x[, seq_len(max_lag)] <- lag_maker(y, max_lag)
-
-
 
   if (seasonal == TRUE & freq > 1)
   {

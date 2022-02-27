@@ -7,10 +7,10 @@
 is_exists_conda()
 }
 \value{
-Logical, true if and only if conda is installed.
+Logical, TRUE if conda is installed.
 }
 \description{
-Is conda installed?
+Only for internal usage.
 }
 \author{
 Resul Akay

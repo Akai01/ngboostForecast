@@ -1,10 +1,42 @@
-#' Probabilistic forecasting using Python's NGBoost library.
-#'
-#' The goal of ngboostForecast is to provide a probabilistic forecasting
-#' interface for Python's \href{https://stanfordmlgroup.github.io}{NGBoost} library
+#' @title Probabilistic Time Series Forecasting
+#' 
+#' @description Probabilistic time series forecasting via Natural Gradient 
+#' Boosting for Probabilistic Prediction.
+#' 
 #' @rdname ngboostForecast
 #' @docType package
-#' @name ngboost
+#' @name ngboostForecast
+#' @references 
+#' 
+#' Duan, T et. al. (2019), NGBoost: Natural Gradient Boosting for Probabilistic 
+#' Prediction. 
+#' @examples  
+#' 
+#' \dontrun{
+#' 
+#' library(ngboostForecast)
+#' 
+#' model <- NGBforecast$new(Dist = Dist("Normal"),
+#'                          Base = sklearner(module = "linear_model",
+#'                          class = "Ridge"),
+#'                          Score = Scores("LogScore"),
+#'                          natural_gradient = TRUE,
+#'                          n_estimators = 200,
+#'                          learning_rate =  0.1,
+#'                          minibatch_frac = 1,
+#'                          col_sample = 1,
+#'                          verbose = TRUE,
+#'                          verbose_eval = 100,
+#'                          tol = 1e-5)
+#' model$fit(y = AirPassengers, seasonal = TRUE, max_lag = 12, xreg = NULL,
+#' 
+#' early_stopping_rounds = 10L)
+#' 
+#' fc <- model$forecast(h = 12, level = c(90, 80), xreg = NULL)
+#' 
+#' autoplot(fc)
+#' 
+#'}
 NULL
 
 

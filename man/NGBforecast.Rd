@@ -3,11 +3,17 @@
 \name{NGBforecast}
 \alias{NGBforecast}
 \title{NGBoost forecasting class}
+\value{
+An NGBforecast class
+}
 \description{
-It is a wrapper for the NGBoost regression.
+The main forecasting class.
 }
 \examples{
 \dontrun{
+
+library(ngboostForecast)
+
 model <- NGBforecast$new(Dist = Dist("Normal"),
                          Base = sklearner(module = "linear_model",
                          class = "Ridge"),
@@ -23,10 +29,14 @@ model <- NGBforecast$new(Dist = Dist("Normal"),
 model$fit(y = AirPassengers, seasonal = TRUE, max_lag = 12, xreg = NULL,
 early_stopping_rounds = 10L)
 fc <- model$forecast(h = 12, level = c(90, 80), xreg = NULL)
-forecast::autoplot(fc)
+
+autoplot(fc)
 }
 
-
+}
+\references{
+Duan, T et. al. (2019), NGBoost: Natural Gradient Boosting for Probabilistic
+Prediction.
 }
 \author{
 Resul Akay
@@ -39,7 +49,6 @@ Resul Akay
 \item \href{#method-forecast}{\code{NGBforecast$forecast()}}
 \item \href{#method-feature_importances}{\code{NGBforecast$feature_importances()}}
 \item \href{#method-plot_feature_importance}{\code{NGBforecast$plot_feature_importance()}}
-\item \href{#method-set_params}{\code{NGBforecast$set_params()}}
 \item \href{#method-get_params}{\code{NGBforecast$get_params()}}
 \item \href{#method-clone}{\code{NGBforecast$clone()}}
 }
@@ -48,7 +57,7 @@ Resul Akay
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Initialize NGBoost regression model.
+Initialize an NGBforecast model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{NGBforecast$new(
   Dist = NULL,
@@ -69,28 +78,34 @@ Initialize NGBoost regression model.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{Dist}}{Assumed distributional form of Y|X=x.
-A Distribution from ngboost.distns, e.g. Normal}
+\item{\code{Dist}}{Assumed distributional form of \code{Y|X=x}. An output of
+\code{\link{Dist}} function, e.g. \code{Dist('Normal')}}
 
-\item{\code{Score}}{Rule to compare probabilistic predictions P̂ to the observed
-data y.A score from ngboost.scores, e.g. LogScore}
+\item{\code{Score}}{Rule to compare probabilistic predictions to
+the observed data. A score from \code{\link{Scores}} function, e.g.
+\code{Scores(score = "LogScore")}.}
 
-\item{\code{Base}}{Base learner to use in the boosting algorithm.
-Any instantiated sklearn regressor, e.g. DecisionTreeRegressor()}
+\item{\code{Base}}{Base learner. An output of \code{\link{sklearner}} function,
+e.g. \code{sklearner(module = "tree", class = "DecisionTreeRegressor", ...)}}
 
-\item{\code{natural_gradient}}{Logical flag indicating whether the natural gradient should be used}
+\item{\code{natural_gradient}}{Logical flag indicating whether the natural
+gradient should be used}
 
 \item{\code{n_estimators}}{The number of boosting iterations to fit}
 
 \item{\code{learning_rate}}{The learning rate}
 
-\item{\code{minibatch_frac}}{The percent subsample of rows to use in each boosting iteration}
+\item{\code{minibatch_frac}}{The percent subsample of rows to use in each
+boosting iteration}
 
-\item{\code{col_sample}}{The percent subsample of columns to use in each boosting iteration}
+\item{\code{col_sample}}{The percent subsample of columns to use in each
+boosting iteration}
 
-\item{\code{verbose}}{Flag indicating whether output should be printed during fitting}
+\item{\code{verbose}}{Flag indicating whether output should be printed
+during fitting. If TRUE it will print logs.}
 
-\item{\code{verbose_eval}}{Increment (in boosting iterations) at which output should be printed}
+\item{\code{verbose_eval}}{Increment (in boosting iterations) at which
+output should be printed}
 
 \item{\code{tol}}{Numerical tolerance to be used in optimization}
 
@@ -99,20 +114,20 @@ Any instantiated sklearn regressor, e.g. DecisionTreeRegressor()}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An NGBRegressor object that can be fit.
+An NGBforecast object that can be fit.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-fit"></a>}}
 \if{latex}{\out{\hypertarget{method-fit}{}}}
 \subsection{Method \code{fit()}}{
-fit a ngbregression to a time series.
+Fit the initialized model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{NGBforecast$fit(
   y,
   max_lag = 5,
   xreg = NULL,
-  test_size = 4,
+  test_size = NULL,
   seasonal = TRUE,
   K = frequency(y)/2 - 1,
   train_loss_monitor = NULL,
@@ -124,18 +139,18 @@ fit a ngbregression to a time series.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{y}}{A ts object}
+\item{\code{y}}{A time series (ts) object}
 
 \item{\code{max_lag}}{Maximum number of lags}
 
-\item{\code{xreg}}{Optional. A numerical vector or matrix of external regressors,
-which must have the same number of rows as y.
-(It should not be a data frame.)}
+\item{\code{xreg}}{Optional. A numerical matrix of external regressors,
+which must have the same number of rows as y.}
 
-\item{\code{test_size}}{The length of validation set.}
+\item{\code{test_size}}{The length of validation set.
+If it is NULL, then, it is automatically specified.}
 
-\item{\code{seasonal}}{Boolean. If \code{seasonal = TRUE} the fourier terms will be
-used for modeling seasonality.}
+\item{\code{seasonal}}{Boolean. If \code{seasonal = TRUE} the fourier terms
+will be used for modeling seasonality.}
 
 \item{\code{K}}{Maximum order(s) of Fourier terms, used only if
 \code{seasonal = TRUE}.}
@@ -165,12 +180,7 @@ NULL
 \subsection{Method \code{forecast()}}{
 Forecast the fitted model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{NGBforecast$forecast(
-  h = frequency(object$y),
-  xreg = NULL,
-  level = c(80, 95),
-  data_frame = FALSE
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{NGBforecast$forecast(h = 6, xreg = NULL, level = c(80, 95), data_frame = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -183,7 +193,8 @@ Forecast the fitted model
 \item{\code{level}}{Confidence level for prediction intervals}
 
 \item{\code{data_frame}}{Bool. If TRUE, forecast will be returned as a
-data.frame object, if FALSE it will return a forecast class}
+data.frame object, if FALSE it will return a forecast class. If TRUE,
+\code{\link{autoplot}} will function.}
 }
 \if{html}{\out{</div>}}
 }
@@ -192,7 +203,7 @@ data.frame object, if FALSE it will return a forecast class}
 \if{html}{\out{<a id="method-feature_importances"></a>}}
 \if{latex}{\out{\hypertarget{method-feature_importances}{}}}
 \subsection{Method \code{feature_importances()}}{
-Return the feature importances for all parameters in the
+Return the feature importance for all parameters in the
 distribution (the higher, the more important the feature).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{NGBforecast$feature_importances()}\if{html}{\out{</div>}}
@@ -211,29 +222,8 @@ Plot feature importance
 \if{html}{\out{<div class="r">}}\preformatted{NGBforecast$plot_feature_importance()}\if{html}{\out{</div>}}
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_params"></a>}}
-\if{latex}{\out{\hypertarget{method-set_params}{}}}
-\subsection{Method \code{set_params()}}{
-Set the parameters of this estimator.
-The method works on simple estimators as well as on nested objects
-(such as :class:\code{~sklearn.pipeline.Pipeline}). The latter have
-parameters of the form \verb{<component>__<parameter>} so that it's
-possible to update each component of a nested object.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{NGBforecast$set_params(...)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{...}}{dict (a named R list). Estimator parameters.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
-self : estimator instance. Estimator instance.
+A ggplot object
 }
 }
 \if{html}{\out{<hr>}}
@@ -255,7 +245,7 @@ contained subobjects that are estimators.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-params. A dict (R list). Parameter names mapped to their values.
+A named list of parameters.
 }
 }
 \if{html}{\out{<hr>}}
