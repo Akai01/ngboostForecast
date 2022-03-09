@@ -77,18 +77,18 @@ library(ngboostForecast)
 
 dists <- list(Dist("Normal"))
 
-base_learners <- list(sklearner(module = "tree", class = "DecisionTreeRegressor", 
-                                max_depth = 1), 
+base_learners <- list(sklearner(module = "tree", class = "DecisionTreeRegressor",
+                                max_depth = 1),
                       sklearner(module = "tree", class = "DecisionTreeRegressor",
-                                max_depth = 2), 
+                                max_depth = 2),
                       sklearner(module = "tree", class = "DecisionTreeRegressor",
-                                max_depth = 3), 
+                                max_depth = 3),
                       sklearner(module = "tree", class = "DecisionTreeRegressor",
-                                max_depth = 4), 
+                                max_depth = 4),
                       sklearner(module = "tree", class = "DecisionTreeRegressor",
-                                max_depth = 5), 
+                                max_depth = 5),
                       sklearner(module = "tree", class = "DecisionTreeRegressor",
-                                max_depth = 6), 
+                                max_depth = 6),
                       sklearner(module = "tree", class = "DecisionTreeRegressor",
                                 max_depth = 7))
 
@@ -110,12 +110,12 @@ model <- NGBforecastCV$new(Dist = dists,
 ## Tune the model:
 
 ``` r
-params <- model$get_params(y = AirPassengers,
-                           seasonal = TRUE,
-                           max_lag = 12,
-                           xreg = NULL,
-                           early_stopping_rounds = NULL,
-                           n_splits = 4L)
+params <- model$tune(y = AirPassengers,
+                     seasonal = TRUE,
+                     max_lag = 12,
+                     xreg = NULL,
+                     early_stopping_rounds = NULL,
+                     n_splits = 4L)
 ```
 
 ## Best parameters:
@@ -124,7 +124,7 @@ params <- model$get_params(y = AirPassengers,
 params
 #> $ngboost_best_params
 #> $ngboost_best_params$Base
-#> DecisionTreeRegressor(max_depth=6.0)
+#> DecisionTreeRegressor(max_depth=5.0)
 #> 
 #> $ngboost_best_params$Dist
 #> <class 'ngboost.distns.normal.Normal'>

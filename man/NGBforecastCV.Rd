@@ -42,7 +42,7 @@ model <- NGBforecastCV$new(Dist = dists,
                            verbose_eval = 100,
                            tol = 1e-5)
 
-params <- model$get_params(y = AirPassengers,
+params <- model$tune(y = AirPassengers,
 seasonal = TRUE,
 max_lag = 12,
 xreg = NULL,
