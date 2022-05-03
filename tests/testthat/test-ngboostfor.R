@@ -17,7 +17,7 @@ if(require(testthat)){
                              tol = 1e-5)
 
     model$fit(y = AirPassengers, seasonal = TRUE, max_lag = 12, xreg = NULL,
-              early_stopping_rounds = 10L)
+              early_stopping_rounds = 10L, K = 5)
 
 
     fc <- c(model$forecast(h = 2, level = c(90, 80), xreg = NULL)$mean)

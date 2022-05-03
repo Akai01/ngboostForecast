@@ -253,7 +253,11 @@ prepare_data <- function(y,
   
   if (seasonal == TRUE | freq > 1)
   {
-    ncolx <- max_lag + K * 2
+    if (K == freq / 2) {
+      ncolx <- max_lag + K * 2 - 1
+    } else {
+      ncolx <- max_lag + K * 2
+    }
   }
   if (seasonal == FALSE | freq == 1)
   {

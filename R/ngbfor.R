@@ -368,7 +368,7 @@ NGBforecast <- R6::R6Class(
                    newxreg_in <- newxreg[i,]
                    new_data <- c(y[length(y)], x[nrow(x), 1:(private$max_lag - 1)])
                    if (private$max_lag == 1) {
-                     new_data = new_data[-1]
+                     new_data = new_data[-2]
                    }
                    if (private$seasonal == TRUE & freq > 1)
                    {

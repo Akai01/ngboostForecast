@@ -124,7 +124,7 @@ params <- model$tune(y = AirPassengers,
 params
 #> $ngboost_best_params
 #> $ngboost_best_params$Base
-#> DecisionTreeRegressor(max_depth=5.0)
+#> DecisionTreeRegressor(max_depth=7.0)
 #> 
 #> $ngboost_best_params$Dist
 #> <class 'ngboost.distns.normal.Normal'>
