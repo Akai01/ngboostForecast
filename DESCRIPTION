@@ -1,6 +1,6 @@
 Package: ngboostForecast
 Title: Probabilistic Time Series Forecasting
-Version: 0.0.2
+Version: 0.1.0
 Authors@R: 
     person(given = "Resul",
            family = "Akay",
