@@ -94,37 +94,37 @@ NGBforecastCV <- R6::R6Class(
                           tol = 0.0001,
                           random_state = NULL){
 
-      if(class(Dist)!="list"){
+      if(!inherits(Dist, "list")){
         stop(
           "Please profide a list of Dist object with at least one spesification"
           )
       }
-      if(class(Score)!="list"){
+      if(!inherits(Score, "list")){
         stop(
           "Please profide a list of Score object with at least one spesification"
         )
       }
-      if(class(Base)!="list"){
+      if(!inherits(Base, "list")){
         stop(
           "Please profide a list of Base base learnesr with at least one spesification"
         )
       }
-      if(class(n_estimators)!="list"){
+      if(!inherits(n_estimators, "list")){
         stop(
           "Please profide a list of n_estimators object with at least one spesification"
         )
       }
-      if(class(learning_rate)!="list"){
+      if(!inherits(learning_rate, "list")){
         stop(
           "Please profide a list of learning_rate object with at least one spesification"
         )
       }
-      if(class(minibatch_frac)!="list"){
+      if(!inherits(minibatch_frac, "list")){
         stop(
           "Please profide a list of minibatch_frac object with at least one spesification"
         )
       }
-      if(class(col_sample)!="list"){
+      if(!inherits(col_sample, "list")){
         stop(
           "Please profide a list of col_sample object with at least one spesification"
         )

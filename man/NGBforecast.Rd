@@ -44,18 +44,18 @@ Resul Akay
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{NGBforecast$new()}}
-\item \href{#method-fit}{\code{NGBforecast$fit()}}
-\item \href{#method-forecast}{\code{NGBforecast$forecast()}}
-\item \href{#method-feature_importances}{\code{NGBforecast$feature_importances()}}
-\item \href{#method-plot_feature_importance}{\code{NGBforecast$plot_feature_importance()}}
-\item \href{#method-get_params}{\code{NGBforecast$get_params()}}
-\item \href{#method-clone}{\code{NGBforecast$clone()}}
+\item \href{#method-NGBforecast-new}{\code{NGBforecast$new()}}
+\item \href{#method-NGBforecast-fit}{\code{NGBforecast$fit()}}
+\item \href{#method-NGBforecast-forecast}{\code{NGBforecast$forecast()}}
+\item \href{#method-NGBforecast-feature_importances}{\code{NGBforecast$feature_importances()}}
+\item \href{#method-NGBforecast-plot_feature_importance}{\code{NGBforecast$plot_feature_importance()}}
+\item \href{#method-NGBforecast-get_params}{\code{NGBforecast$get_params()}}
+\item \href{#method-NGBforecast-clone}{\code{NGBforecast$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-NGBforecast-new"></a>}}
+\if{latex}{\out{\hypertarget{method-NGBforecast-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize an NGBforecast model.
 \subsection{Usage}{
@@ -118,8 +118,8 @@ An NGBforecast object that can be fit.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-fit"></a>}}
-\if{latex}{\out{\hypertarget{method-fit}{}}}
+\if{html}{\out{<a id="method-NGBforecast-fit"></a>}}
+\if{latex}{\out{\hypertarget{method-NGBforecast-fit}{}}}
 \subsection{Method \code{fit()}}{
 Fit the initialized model.
 \subsection{Usage}{
@@ -175,8 +175,8 @@ NULL
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-forecast"></a>}}
-\if{latex}{\out{\hypertarget{method-forecast}{}}}
+\if{html}{\out{<a id="method-NGBforecast-forecast"></a>}}
+\if{latex}{\out{\hypertarget{method-NGBforecast-forecast}{}}}
 \subsection{Method \code{forecast()}}{
 Forecast the fitted model
 \subsection{Usage}{
@@ -200,8 +200,8 @@ data.frame object, if FALSE it will return a forecast class. If TRUE,
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-feature_importances"></a>}}
-\if{latex}{\out{\hypertarget{method-feature_importances}{}}}
+\if{html}{\out{<a id="method-NGBforecast-feature_importances"></a>}}
+\if{latex}{\out{\hypertarget{method-NGBforecast-feature_importances}{}}}
 \subsection{Method \code{feature_importances()}}{
 Return the feature importance for all parameters in the
 distribution (the higher, the more important the feature).
@@ -214,8 +214,8 @@ A data frame
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_feature_importance"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_feature_importance}{}}}
+\if{html}{\out{<a id="method-NGBforecast-plot_feature_importance"></a>}}
+\if{latex}{\out{\hypertarget{method-NGBforecast-plot_feature_importance}{}}}
 \subsection{Method \code{plot_feature_importance()}}{
 Plot feature importance
 \subsection{Usage}{
@@ -227,8 +227,8 @@ A ggplot object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_params"></a>}}
-\if{latex}{\out{\hypertarget{method-get_params}{}}}
+\if{html}{\out{<a id="method-NGBforecast-get_params"></a>}}
+\if{latex}{\out{\hypertarget{method-NGBforecast-get_params}{}}}
 \subsection{Method \code{get_params()}}{
 Get parameters for this estimator.
 \subsection{Usage}{
@@ -249,8 +249,8 @@ A named list of parameters.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-NGBforecast-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-NGBforecast-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

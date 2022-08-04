@@ -267,7 +267,9 @@ prepare_data <- function(y,
   x <- matrix(0, nrow = c(length_y - max_lag), ncol = ncolx)
 
   x[, seq_len(max_lag)] <- lag_maker(y, max_lag)
-
+  
+  fourier_s <- NULL
+  
   if (seasonal == TRUE & freq > 1)
   {
     fourier_s <- forecast::fourier(modified_y, K = K)

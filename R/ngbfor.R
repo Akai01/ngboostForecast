@@ -183,9 +183,15 @@ NGBforecast <- R6::R6Class(
                 train_loss_monitor = train_loss_monitor,
                 val_loss_monitor = val_loss_monitor,
                 early_stopping_rounds = early_stopping_rounds)
-      method = paste0("NGBforecast", " with ",
-                      gsub("[()]", "", paste0(private$Base)),
-                      "(",max_lag,", ", K, ")")
+      if(seasonal){
+        method = paste0("NGBforecast", " with ",
+                        gsub("[()]", "", paste0(private$Base)),
+                        "(",max_lag,", ", K, ")")
+      } else {
+        method = paste0("NGBforecast", " with ",
+                        gsub("[()]", "", paste0(private$Base)),
+                        "(",max_lag,", ", 0, ")")
+      }
       
       fitted_int <- ts(c(rep(NA, max_lag), c(model$predict(X))), 
                        start = start(y), frequency = frequency(y))

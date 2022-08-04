@@ -62,14 +62,14 @@ Resul Akay
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{NGBforecastCV$new()}}
-\item \href{#method-tune}{\code{NGBforecastCV$tune()}}
-\item \href{#method-clone}{\code{NGBforecastCV$clone()}}
+\item \href{#method-NGBforecastCV-new}{\code{NGBforecastCV$new()}}
+\item \href{#method-NGBforecastCV-tune}{\code{NGBforecastCV$tune()}}
+\item \href{#method-NGBforecastCV-clone}{\code{NGBforecastCV$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-NGBforecastCV-new"></a>}}
+\if{latex}{\out{\hypertarget{method-NGBforecastCV-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize an NGBforecastCV model.
 \subsection{Usage}{
@@ -132,8 +132,8 @@ An NGBforecastCV object that can be fit.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-tune"></a>}}
-\if{latex}{\out{\hypertarget{method-tune}{}}}
+\if{html}{\out{<a id="method-NGBforecastCV-tune"></a>}}
+\if{latex}{\out{\hypertarget{method-NGBforecastCV-tune}{}}}
 \subsection{Method \code{tune()}}{
 Tune ngboosForecast.
 \subsection{Usage}{
@@ -191,8 +191,8 @@ A named list of best parameters.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-NGBforecastCV-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-NGBforecastCV-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
